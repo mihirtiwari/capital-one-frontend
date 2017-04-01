@@ -24,7 +24,7 @@ export default {
   name: 'MainPage',
   data() {
     return {
-      msg: 'Welcome to Fud',
+      msg: 'Welcome',
       city: '',
     };
   },
@@ -37,7 +37,7 @@ export default {
       if (this.city === "")
         window.alert("Please input a city!");
       else{
-        localStorage.setItem("city", this.city);  
+        localStorage.setItem("city", this.city);
         this.$router.push('/search');
       }
     },
