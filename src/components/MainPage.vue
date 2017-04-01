@@ -30,9 +30,16 @@ export default {
   },
   methods: {
     submit() {
-      const str = `City: ${this.city}`;
+        /* eslint-disable */
+        //figure out how to check if valid city and prevent
+      //   bus.$emit('city-input', this.city);
       /* eslint-disable no-console */
-      console.log(str);
+      if (this.city === "")
+        window.alert("Please input a city!");
+      else{
+        localStorage.setItem("city", this.city);  
+        this.$router.push('/search');
+      }
     },
   },
 };
@@ -50,7 +57,7 @@ export default {
     position: relative;
     text-align: center;
     z-index: 2;
-    font-size: 50px;
+    font-size: 60px;
 }
 
 .main-page input {
