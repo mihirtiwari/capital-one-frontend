@@ -8,7 +8,7 @@
                         <div style="padding: 0px 20px 20px 20px">
                             <!-- Figure out how to add prices -->
                             <p style="margin: 0; margin-top: 10px">How expensive?</p>
-                            <input id="price" type="range" min="0" max="20" value="0" step="5" v-model="price"/>
+                            <input id="price" type="range" min="0" max="4" value="0" step="1" v-model="price"/>
                             <br>
                             <!-- Figure out how to add radii -->
                             <p style="margin: 0">In what radius?</p>
@@ -34,41 +34,34 @@
             </div>
         </div>
         <div id="businesses" class="container">
+            <h3 style="margin-left: 30px">Results:</h3>
             <div class="row">
                 <div v-for="b in businesses" class="col-md-7 col-md-offset-2">
-                    <a href="#/search" data-toggle="modal" data-target="#myModal">
-                        <div class="card" >
+                    <a :href="b.url">
+                        <div class="card">
                             <!-- Images aren't same size so acount for it -->
                             <img id="img" v-bind:src="b.image" />
-                            <p id="name"><a v-bind:href="b.url"> {{ b.name }} </a></p>
+                            <p id="name">{{ b.name }}</p>
                             <p id="phone"><b>Phone:</b> {{ b.phone }}</p>
                             <p id="address"><b>Address:</b><br>{{ b.address }}</p>
                             <!-- Put in Yelp Stars -->
                             <p id="rating"><b>Yelp Rating: </b>{{ b.rating }}</p>
+                            <!-- Information is wrong; currently checking f business still exists or not -->
+                            <!-- <p id="closed"><b>Currently: </b></p>
+                            <img src="../assets/open.gif" v-if="b.closed == false"/>
+                            <p id="closed" v-else="b.closed == true"><b>Currently: </b>Open</p> -->
                         </div>
                     </a>
-
+                    <!-- <modal v-bind:id="b.id" @review="add_review"/> -->
                 </div>
-                <!-- Modal -->
-                <div class="modal fade" id="myModal" role="dialog">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                          <p>Titles</p>
-                      </div>
-                      <div class="modal-body">
-                          <p>dip</p>
-                          <p>Shit</p>
-                      </div>
-                    </div>
-                  </div>
-               </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+// import Modal from './Modal';
+
 export default {
   name: 'Businesses',
   data() {
@@ -76,7 +69,7 @@ export default {
       businesses: [],
       base_url: 'http://127.0.0.1:5000/',
       b_and_id: [],
-      business_info: {},
+      reviews: [],
       price: 0,
       radius: 0,
       open_now: '',
@@ -84,8 +77,12 @@ export default {
       waitlist: '',
       cashback: '',
       deals: '',
+      id: '',
     };
   },
+  // components: {
+  //   Modal,
+  // },
   created() {
     this.addBusiness();
   },
@@ -117,13 +114,13 @@ export default {
           var location = localStorage.getItem('city');
           var p = 0;
           var open = 'false';
-          var radius = 0;
+          var radius = this.radius;
 
-          if (this.price !== 0){
-              p = (this.price - ((this.price / 5) * 4));
+          if (this.price != 0){
+            p = this.price;
           }
 
-          if (this.radius !== 0){
+          if (radius != 0){
               radius = this.radius;
           }
 
@@ -133,23 +130,23 @@ export default {
 
           var attributes = '';
 
-          if (this.hot_new !== ''){
+          if (this.hot_new != ''){
               attributes += 'hot_and_new,';
           }
 
-          if (this.waitlist !== ''){
+          if (this.waitlist != ''){
               attributes += 'waitlist_reservation,';
           }
 
-          if (this.cashback !== ''){
+          if (this.cashback != ''){
               attributes += 'cashback,'
           }
 
-          if (this.deals !== ''){
+          if (this.deals != ''){
               attributes += 'deals'
           }
 
-          var url = 'businesses/location=' + location + '&price=' + p + '&open=' + open + '&filters=' + attributes;
+          var url = 'businesses/location=' + location + '&price=' + p + '&radius=' + radius + '&open=' + open + '&filters=' + attributes;
 
           this.$http.get(this.base_url + url).then(response => {
               var res = response.body;
@@ -158,7 +155,7 @@ export default {
                   this.b_and_id.push({
                       'name': res[i].name,
                       'id': res[i].id,
-                  })
+                  });
               }
           }, response => {
               this.businesses.push({
@@ -190,8 +187,9 @@ export default {
           });
       }
     },
-    show() {
-        console.log('works')
+    add_review(value) {
+        this.reviews.push(value);
+        // console.log(this.reviews)
     }
   },
 };
@@ -296,6 +294,10 @@ tab4 {
 }
 
 #radius {
+    width: 50%;
+}
+
+#closed {
     width: 50%;
 }
 
