@@ -1,6 +1,6 @@
 <template>
   <div class="main-page">
-        <img src="../assets/food.jpg">
+        <img src="http://cravingscafe.com.au/wp-content/uploads/2014/06/IMG_5795small.jpg">
         <div class="container">
             <div class="row">
                 <h1>{{ msg }}</h1>
