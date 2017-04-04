@@ -31,9 +31,6 @@ export default {
   methods: {
     submit() {
         /* eslint-disable */
-        //figure out how to check if valid city and prevent
-      //   bus.$emit('city-input', this.city);
-      /* eslint-disable no-console */
       if (this.city === "")
         window.alert("Please input a city!");
       else{

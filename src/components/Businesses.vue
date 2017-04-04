@@ -8,10 +8,21 @@
                         <div style="padding: 0px 20px 20px 20px">
                             <!-- Figure out how to add prices -->
                             <p style="margin: 0; margin-top: 10px">How expensive?</p>
+                            <p class="exp" v-if="this.price == 0"><b>Expensiveness: </b>No preference</p>
+                            <p class="exp" v-else-if="this.price == 1"><b>Expensiveness: </b>Cheap</p>
+                            <p class="exp" v-else-if="this.price == 2"><b>Expensiveness: </b>Moderately Cheap</p>
+                            <p class="exp" v-else-if="this.price == 3"><b>Expensiveness: </b>High-End Cheap</p>
+                            <p class="exp" v-else-if="this.price == 4"><b>Expensiveness: </b>Classy</p>
                             <input id="price" type="range" min="0" max="4" value="0" step="1" v-model="price"/>
                             <br>
                             <!-- Figure out how to add radii -->
                             <p style="margin: 0">In what radius?</p>
+                            <p class="dist" v-if="this.radius == 0"><b>Radius: </b>No preference</p>
+                            <p class="dist" v-else-if="this.radius == 5"><b>Radius: </b>5 Miles</p>
+                            <p class="dist" v-else-if="this.radius == 10"><b>Radius: </b>10 Miles</p>
+                            <p class="dist" v-else-if="this.radius == 15"><b>Radius: </b>15 Miles</p>
+                            <p class="dist" v-else-if="this.radius == 20"><b>Radius: </b>20 Miles</p>
+                            <p class="dist" v-else-if="this.radius == 25"><b>Radius: </b>25 Miles</p>
                             <input id="radius" type="range" min="0" max="25" value="0" step="5" v-model="radius"/>
                         </div>
                     </div>
@@ -20,14 +31,14 @@
                             <p style="margin: 0; margin-top: 10px">Open Now?</p>
                             <input type="radio" name="open" value="yes" v-model="open_now"> Yes&ensp;
                             <input type="radio" name="open" value="no" v-model="open_now"> No
-                            <p style="margin: 0; margin-top: 10px">Other filters?</p>
+                            <p style="margin: 0; margin-top: 20px">Other filters?</p>
                             <input type="checkbox" name="filter" value="hot" v-model="hot_new"> Hot and New&ensp;
                             <input type="checkbox" name="filter" value="waitlist" v-model="waitlist"> Has a Waitlist&ensp;
                             <input type="checkbox" name="filter" value="cashback" v-model="cashback"> Has Cashback&ensp;
                             <input type="checkbox" name="filter" value="deals" v-model="deals"> Has Deals&ensp;
                         </div>
                     </div>
-                    <div>
+                    <div style="clear: both">
                         <button style="width: 10%" class="btn" v-on:click="submit">Submit</button>
                     </div>
                 </div>
@@ -41,18 +52,27 @@
                         <div class="card">
                             <!-- Images aren't same size so acount for it -->
                             <img id="img" v-bind:src="b.image" />
-                            <p id="name">{{ b.name }}</p>
-                            <p id="phone"><b>Phone:</b> {{ b.phone }}</p>
-                            <p id="address"><b>Address:</b><br>{{ b.address }}</p>
-                            <!-- Put in Yelp Stars -->
-                            <p id="rating"><b>Yelp Rating: </b>{{ b.rating }}</p>
-                            <!-- Information is wrong; currently checking f business still exists or not -->
-                            <!-- <p id="closed"><b>Currently: </b></p>
-                            <img src="../assets/open.gif" v-if="b.closed == false"/>
-                            <p id="closed" v-else="b.closed == true"><b>Currently: </b>Open</p> -->
+                            <div style="width:50%">
+                                <p id="name">{{ b.name }}</p>
+                                <p id="phone"><b>Phone:</b> {{ b.phone }}</p>
+                                <p id="address"><b>Address:</b><br>{{ b.address }}</p>
+                                <!-- Put in Yelp Stars -->
+                                <p id="rating"><b>Rating: </b></p>
+                                <img class="rate" src='../assets/yelp_stars/web_and_ios/regular/regular_0.png' v-if="b.rating == 0" />
+                                <img class="rate" src='../assets/yelp_stars/web_and_ios/regular/regular_1_half.png' v-else-if="b.rating == 1.5" />
+                                <img class="rate" src='../assets/yelp_stars/web_and_ios/regular/regular_1.png' v-else-if="b.rating == 1" />
+                                <img class="rate" src='../assets/yelp_stars/web_and_ios/regular/regular_2_half.png' v-else-if="b.rating == 2.5" />
+                                <img class="rate" src='../assets/yelp_stars/web_and_ios/regular/regular_2.png' v-else-if="b.rating == 2" />
+                                <img class="rate" src='../assets/yelp_stars/web_and_ios/regular/regular_3_half.png' v-else-if="b.rating == 3.5" />
+                                <img class="rate" src='../assets/yelp_stars/web_and_ios/regular/regular_3.png' v-else-if="b.rating == 3" />
+                                <img class="rate" src='../assets/yelp_stars/web_and_ios/regular/regular_4_half.png' v-else-if="b.rating == 4.5" />
+                                <img class="rate" src='../assets/yelp_stars/web_and_ios/regular/regular_4.png' v-else-if="b.rating == 4" />
+                                <img class="rate" src='../assets/yelp_stars/web_and_ios/regular/regular_5.png' v-else-if="b.rating == 5" />
+                                <p id="count">Based on {{ b.num_reviews }} reviews</p>
+                                <img id="logo" src='../assets/yelp_logo.png' />
+                            </div>
                         </div>
                     </a>
-                    <!-- <modal v-bind:id="b.id" @review="add_review"/> -->
                 </div>
             </div>
         </div>
@@ -60,14 +80,12 @@
 </template>
 
 <script>
-// import Modal from './Modal';
-
 export default {
   name: 'Businesses',
   data() {
     return {
       businesses: [],
-      base_url: 'http://127.0.0.1:5000/',
+      base_url: 'https://capital-challenge.herokuapp.com/',
       b_and_id: [],
       reviews: [],
       price: 0,
@@ -80,9 +98,6 @@ export default {
       id: '',
     };
   },
-  // components: {
-  //   Modal,
-  // },
   created() {
     this.addBusiness();
   },
@@ -146,7 +161,7 @@ export default {
               attributes += 'deals'
           }
 
-          var url = 'businesses/location=' + location + '&price=' + p + '&radius=' + radius + '&open=' + open + '&filters=' + attributes;
+          var url = 'filters?location=' + location + '&price=' + p + '&radius=' + radius + '&open=' + open + '&filters=' + attributes;
 
           this.$http.get(this.base_url + url).then(response => {
               var res = response.body;
@@ -189,7 +204,6 @@ export default {
     },
     add_review(value) {
         this.reviews.push(value);
-        // console.log(this.reviews)
     }
   },
 };
@@ -216,7 +230,7 @@ p {
 }
 
 #name {
-    width: 70%;
+    width: 100%;
     float: left;
     font-size: 20px;
 }
@@ -234,18 +248,16 @@ p {
 }
 
 #phone {
-    width: 70%;
+    width: 100%;
     float: left;
 }
 
 #address {
-    width: 70%;
+    width: 100%;
     float: left;
 }
 
 .row {
-    /*margin-top: 50px;*/
-    /*border: 1px solid black;*/
     padding-top: 30px;
 }
 
@@ -261,7 +273,7 @@ a {
     border: 1px solid black;
     margin: 0;
     padding: 0;
-    /*background-color: #ff999e;*/
+    background-color: #f7f7f7;
 }
 
 #topbar {
@@ -272,22 +284,6 @@ a {
     width: 100%;
     height: 100%;
 }
-/*
-tab1 {
-    padding-left: 4em;
-}
-
-tab2 {
-    padding-left: 4em;
-}
-
-tab3 {
-    padding-left: 4em;
-}
-
-tab4 {
-    padding-left: 4em;
-}*/
 
 #price {
     width: 50%;
@@ -314,5 +310,35 @@ h3 {
 
 .modal-header {
     padding: 10px 0px 0px 10px;
+}
+
+#count {
+    width: 100%;
+    float: left;
+    margin: 0px;
+    color: #8f8e8d;
+}
+
+#transaction {
+    width: 50%;
+}
+
+.rate {
+    float: left;
+    margin-bottom: 10px;
+}
+
+#logo {
+    width: 15%;
+    height: 15%;
+    float: left;
+}
+
+.exp {
+    margin-bottom: 0px;
+}
+
+.dist {
+    margin-bottom: 0px;
 }
 </style>
